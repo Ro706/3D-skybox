@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+ <head> 
+  <title>Three js skybox test</title> 
+  <meta charset="utf-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <style>
+        body{margin:0;}
+    canvas{
+            width: 100%;
+            height: 100%;
+            position:fixed;
+            left:0;
+            top:0;
+    }
+</style>
+ </head> 
+ <body> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/104/three.js"></script> 
+  <script>      
+  window.addEventListener('click', function() {
+    if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen();
+  }    
+  })
+  </script> 
+  <script src="https://unpkg.com/three@0.85.0/examples/js/controls/OrbitControls.js"></script> 
+  <script>    
+var camera, scene, renderer  , controls, cube, plane;  
+          
+  function init() {
+                            
+scene = new THREE.Scene();
+camera = new THREE.PerspectiveCamera(105, window.innerWidth / window.innerHeight, 0.1, 30000);
+camera.position.set(-900, -200, -900);
+scene.background = new THREE.Color(0x313131);
+
+renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
+var geometry = new THREE.BoxGeometry(1, 1, 1);
+
+var Pgeometry = new THREE.BoxGeometry(4, 1/100, 4);
+
+
+var controls = new THREE.OrbitControls( camera, renderer.domElement );
+controls.maxDistance = 1500;
+
+var texture = new THREE.TextureLoader().load( "https://i.ibb.co/zfzGdc5/metal.jpg" ); 
+
+texture.wrapS = THREE.RepeatWrapping; 
+texture.wrapT = THREE.RepeatWrapping; 
+texture.repeat.set( 1, 1 );
+
+var material = new THREE.MeshPhongMaterial({map: texture, 
+                                           specular: '#c8c8c8',
+                                           shininess: 10.0});
+ cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+
+var Pmaterial = new THREE.MeshPhongMaterial({color:"white"});
+
+plane = new THREE.Mesh(Pgeometry, Pmaterial);
+scene.add(plane);
+
+var HemisphereLight = new THREE.HemisphereLight(0xa9a9a9, 0xa9a9a9, 1 );
+scene.add( HemisphereLight );
+
+//camera.position.z = 5;
+plane.position.y = -1;
+cube.rotation.x = 0;
+cube.rotation.y = 0;
+
+var materialArray = [];
+
+var texture_ft = new THREE.TextureLoader().load("https://i.ibb.co/ZmQngL1/humble-ft.jpg");
+var texture_bk = new THREE.TextureLoader().load("https://i.ibb.co/9qzNKvs/humble-bk.jpg");
+var texture_up = new THREE.TextureLoader().load("https://i.ibb.co/wwQVKxB/humble-up.jpg");
+var texture_dn = new THREE.TextureLoader().load("https://i.ibb.co/Jn9RbLB/humble-dn.jpg");
+var texture_rt = new THREE.TextureLoader().load("https://i.ibb.co/s2YrCVJ/humble-rt.jpg");
+var texture_lf = new THREE.TextureLoader().load("https://i.ibb.co/f01VdXT/humble-lf.jpg");
+
+materialArray.push(new THREE.MeshBasicMaterial({map: texture_ft}));
+materialArray.push(new THREE.MeshBasicMaterial({map: texture_bk}));
+materialArray.push(new THREE.MeshBasicMaterial({map: texture_up}));
+materialArray.push(new THREE.MeshBasicMaterial({map: texture_dn}));
+materialArray.push(new THREE.MeshBasicMaterial({map: texture_rt}));
+materialArray.push(new THREE.MeshBasicMaterial({map: texture_lf}));
+
+for(var i = 0; i < 6; i++){
+    materialArray[i].  side = THREE.BackSide;
+}
+
+var skyboxgeo = new THREE.BoxGeometry(10000, 10000, 10000);
+  var skybox = new THREE.Mesh(skyboxgeo, materialArray);
+  scene.add(skybox);
+  update();
+ }
+ 
+ function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);  
+}
+
+function update() {
+    requestAnimationFrame(update);
+    renderer.render(scene, camera);        
+}
+
+window.addEventListener('resize', onWindowResize, false);
+
+init();
+
+  </script> 
+ </body>
+</html>
